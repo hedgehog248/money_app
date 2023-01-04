@@ -36,7 +36,7 @@ function regist() {
   let balance;
   for (let i = 0; i < radio.length; i++) {
     if (radio[i].checked == true) {
-      balance = radio[i].ariaValueMax;
+      balance = radio[i].value;
       break;
     }
   }
@@ -97,5 +97,52 @@ function regist() {
       db.close();
     }
   }
+
+  // 入出金一覧を作成
+  createList();
 }
 
+function createList() {
+  // DBからデータを全件取得
+  let database = indexedDB.open(dbName);
+  database.onsuccess = function (event) {
+    let db = event.target.result;
+    let transaction = db.transaction(storeName, "readonly");
+    let store = transaction.objectStore(storeName);
+    store.getAll().onsuccess = function (data) {
+      console.log(data);
+      let rows = data.target.result;
+
+      let section = document.getElementById("list");
+      // 入出金一覧のテーブルを作る
+      // バッククオートでヒアドキュメント（複数行の代入が可能）
+      let table = `
+        <table>
+          <tr>
+            <th>日付</th>
+            <th>収支</th>
+            <th>カテゴリ</th>
+            <th>金額</th>
+            <th>メモ</th>
+            <th>削除</th>
+          </tr>
+        `;
+      // 入出金データの表示
+      rows.forEach((element) => {
+        console.log(element);
+        table += `
+            <tr>
+              <td>${element.date}</td>
+              <td>${element.balance}</td>
+              <td>${element.category}</td>
+              <td>${element.amount}</td>
+              <td>${element.memo}</td>
+              <td><button>✕</button></td>
+            </tr>
+          `;
+      });
+      table += `</table>`; // 最後にtable閉じタグを追加することでテーブルを完成させる
+      section.innerHTML = table;
+    }
+  }
+}
