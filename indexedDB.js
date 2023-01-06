@@ -102,6 +102,7 @@ function regist() {
   createList();
 }
 
+// 入出金一覧表示
 function createList() {
   // DBからデータを全件取得
   let database = indexedDB.open(dbName);
@@ -137,12 +138,49 @@ function createList() {
               <td>${element.category}</td>
               <td>${element.amount}</td>
               <td>${element.memo}</td>
-              <td><button>✕</button></td>
+              <td><button onclick="deleteData('${element.id}')">✕</button></td>
             </tr>
           `;
       });
       table += `</table>`; // 最後にtable閉じタグを追加することでテーブルを完成させる
       section.innerHTML = table;
     }
+  }
+}
+
+// データの削除
+function deleteData(id) {
+  // DBを開く
+  let database = indexedDB.open(dbName, dbVersion);
+  database.onupgradeneeded = function (event) {
+    let db = event.target.result;
+  }
+  // DBが開いたら削除を実行
+  database.onsuccess = function (event) {
+    let db = event.target.result;
+    let transaction = db.transaction(storeName, "readwrite");
+    transaction.oncomplete = function (event) {
+      console.log("トランザクション完了");
+    }
+    transaction.onerror = function (event) {
+      console.log("トランザクションエラー");
+    }
+    let store = transaction.objectStore(storeName);
+
+    // データの削除
+    let deleteData = store.delete(id);
+    deleteData.onsuccess = function (event) {
+      console.log("削除成功");
+      createList();
+    }
+    deleteData.onerror = function (event) {
+      console.log("削除失敗");
+    }
+    // DBを閉じる
+    db.close();
+  }
+  // DBが開けなかった場合の処理
+  database.onerror = function (event) {
+    console.log("データベースに接続できませんでした");
   }
 }
