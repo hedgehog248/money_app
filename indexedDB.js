@@ -144,6 +144,8 @@ function createList() {
       });
       table += `</table>`; // 最後にtable閉じタグを追加することでテーブルを完成させる
       section.innerHTML = table;
+      // 円グラフの作成
+      createPieChart(rows);
     }
   }
 }
