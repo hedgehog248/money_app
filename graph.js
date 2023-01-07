@@ -24,4 +24,34 @@ function createPieChart(rows) {
     keyArray.push(key);
     valueArray.push(pieChartData[key]);
   }
+
+  //Chart.jsの機能を使用して円グラフを表示
+  let pieChart = document.getElementById("pieChart");
+  new Chart(pieChart, {
+    type: "pie",
+    data: {
+      labels: keyArray,
+      datasets: [
+        {
+          backgroundColor: [
+            "#EB5757",
+            "#6FCF97",
+            "#56CCF2",
+            "#F2994A",
+            "#F2C94C",
+            "#2F80ED",
+            "#9B51E0",
+            "#BB6BD9",
+          ],
+          data: valueArray,
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        text: "カテゴリ毎の支出割合",
+      },
+    },
+  });
 }
